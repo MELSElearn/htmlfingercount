@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<div class="container">
+        <center> 
+           
+	<table>
+        <tr>
+            <td valign="top">
+                <table border="0" width="50%">
+                    <tr>
+                    <td width="50%" align="center">
+                        <canvas id="output_canvas" class="output_canvas" width="480px" height="480px"></canvas>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td width="50%" align="center">
+                        <video id="input_video" class="input_video" style="visibility:hidden;"></video>
+                    </td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+
+
+    </table>
+	
+    </center>
+  </div>
+ 
+  <script type="text/javascript" src="static/finger_detect.js"></script>
+  <script>
+  function onOpenCvReady() {
+	  
+  }
+  </script>
+  <script async src="static/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+</body>
+</html>
