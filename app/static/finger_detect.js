@@ -6,6 +6,9 @@ videoElement.setAttribute('muted', '');
 videoElement.setAttribute('playsinline', '');
 const fingers =[];
 
+const canvasElement2 = document.getElementById("output_canvas2");
+const canvasCtx2 = canvasElement2.getContext('2d');
+
 var video = document.querySelector("#input_video");
 
 const fingerpoint = [8, 12, 16, 20];
@@ -23,23 +26,40 @@ function getxy(a)
 
 function onResults(results) {
   fingerscount = 0;
+  var cx,cy;	
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-  canvasCtx.drawImage(
-      results.image, 0, 0, canvasElement.width, canvasElement.height);
+  canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
   if (results.multiHandLandmarks) {
+      
     for (const landmarks of results.multiHandLandmarks) {
         //check thumb position
+        let cpos = getxy(landmarks[17]);
+        let cpos2 = getxy(landmarks[2]);
+
         let tpos = getxy(landmarks[4]);
         let tpos2 = getxy(landmarks[3]);
-        if (tpos2[0]< tpos[0])
+        if (cpos[0]< cpos2[0])
         {
-            fingerscount = fingerscount + 1;
+            //left hand
+            if (tpos2[0]< tpos[0])
+            {
+                fingerscount = fingerscount + 1;
+            }
+        }else
+        {
+            //right hand
+            if (tpos2[0]> tpos[0])
+            {
+                fingerscount = fingerscount + 1;
+            }
         }
-        //check other finger position
+
         for (let i = 0; i < fingerpoint.length; i++) {
             let pos = getxy(landmarks[fingerpoint[i]]);
             let pos2 = getxy(landmarks[fingerpoint[i]-2]);
+            cx = pos[0];
+            cy = pos[1];
             if (pos2[1]> pos[1])
             {   
                 fingerscount = fingerscount + 1;
@@ -58,6 +78,16 @@ function onResults(results) {
   canvasCtx.fillText("Finger Count=" + fingerscount, 10, 20);
 }
 
+function onResults2(results) {
+  canvasCtx2.save();
+  canvasCtx2.translate(canvasElement2.width, 0);
+  canvasCtx2.scale(-1, 1);
+  canvasCtx2.clearRect(0, 0, canvasElement2.width, canvasElement2.height);
+  canvasCtx2.drawImage(
+      results.image, 0, 0, canvasElement2.width, canvasElement2.height);
+  canvasCtx2.restore();
+}
+
 const hands = new Hands({locateFile: (file) => {
   return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
 }});
@@ -71,7 +101,11 @@ hands.onResults(onResults);
 
 const camera = new Camera(videoElement, {
   onFrame: async () => {
-    await hands.send({image: videoElement});
+    //await hands.send({image: videoElement});
+    //flip the video content and load into output_canvas2 before process to detect finger
+    onResults2({image: videoElement});
+    //use the flipped image in output_canvas2 to detect finger
+    await hands.send({image: canvasElement2});
   },
   width: 480,
   height: 480
